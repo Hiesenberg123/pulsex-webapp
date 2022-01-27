@@ -1,0 +1,7 @@
+{
+    "installOptions" : {
+        "installDependencies" : true,
+        "installFromRepository" : false,
+        "libraryPath" : "C:/Users/Mann/anaconda3/envs/base3.6/Lib/R/library"
+    }
+}
