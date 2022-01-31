@@ -262,13 +262,17 @@ count_bigrams <- function(dataset) {
 }
 
 count_bigrams2 <- function(dataset) {
+  # print(colnames(dataset))
+  # print("printed")
+  # print(typeof(dataset))
+  # print(dataset[1:5,])
   dataset %>%
     unnest_tokens(bigram, trans, token = "ngrams", n = 2) %>%
     separate(bigram, c("word1", "word2"), sep = " ") %>%
     filter(!word1 %in% stop_words$word,
            !word2 %in% stop_words$word) %>%
-    
     count(word1, word2, sort = TRUE)
+
 }
 
 visualize_bigrams <- function(bigrams) {
@@ -332,6 +336,9 @@ wd_corr2<- function(djt2){
 wd_corr22<- function(djt2){  
   
   kjv_bigrams <- count_bigrams2(djt2)
+  
+  print("counting")
+  print(kjv_bigrams)
   
   # filter out rare combinations, as well as digits
   kjv_bigrams %>%
@@ -525,7 +532,8 @@ news_sub <- function(Final_DB, sub, week= "All", lang, src= "All"){
     # news_1<- Final_DB
     news_1<-Final_DB$find()
   }else{
-    news_1<- Final_DB[Final_DB$week2== week,]
+    news_1<- Final_DB[Final_DB$week2== week]
+    # news1 <- Final_DB$find(paste('{"$week2": ', week, '}', sep=''))
   }
   
   news_2<- news_1[news_1$sub==sub,]

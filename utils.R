@@ -262,6 +262,8 @@ count_bigrams2 <- function(dataset) {
            !word2 %in% stop_words$word) %>%
     
     count(word1, word2, sort = TRUE)
+  
+  print(colnames(dataset))
 }
 
 visualize_bigrams <- function(bigrams) {
