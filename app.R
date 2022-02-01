@@ -17,7 +17,7 @@ library(dplyr)
 
 # JSR
 
-# source("twitter.R")
+source("twitter.R")
 source("media.R")
 # source("forums.R")
 # source("ytfb.R")
@@ -45,8 +45,8 @@ info_page <- div(
 
 router <- make_router(
   route("index", info_page),
-  route("media", uimedia("p1"))
-  # route("twitter", uitwitter("p2"))
+  route("media", uimedia("p1")),
+  route("twitter", uitwitter("p2"))
   # route("forums", uitwitter("p3")),
   # route("ytfb", uiytfb("p4")),
   # route("comp", uicomp("p5"))
@@ -56,7 +56,7 @@ server <- function(input, output, session) {
   # router pages
   router$server(input, output, session)#router(input, output) #
   mediaServer("p1")
-  # twitterServer("p2")
+  twitterServer("p2")
   # twitterServer("p3")
   # ytfbServer("p4")
   # compServer("p5")
@@ -71,8 +71,8 @@ ui <- semanticPage(
   horizontal_menu(
     list(
       list(name = "Home", link = route_link("index"), icon = "world"),
-      list(name = "Digital Media", link = route_link("media"), icon = "newspaper")
-      # list(name = "Twitter", link = route_link("twitter"), icon = "twitter")
+      list(name = "Digital Media", link = route_link("media"), icon = "newspaper"),
+      list(name = "Twitter", link = route_link("twitter"), icon = "twitter")
       # list(name = "Youtube/ Facebook", link = route_link("ytfb"), icon = "youtube"),
       # list(name = "Forums", link = route_link("forums"), icon = "reddit"),
       # list(name = "Comprehensive", link = route_link("comp"), icon = "eject")

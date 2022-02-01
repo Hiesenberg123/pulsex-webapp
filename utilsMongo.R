@@ -119,19 +119,42 @@ myGrid <- grid_template(
 )
 
 
+# twitter_sub <- function(twitter_db, sub, date_start, date_end, lang){
+#   # twitter_1<- twitter_db%>% subset(date> date_start & date< date_end)
+#   # result <- New$find('{ "created_at": {"$gte": { "$date": "2021-09-15T00:00:00.000Z"}, "$lte": { "$date": "2021-09-20T00:00:00.000Z"}}}')
+#   date_start <- paste0(as.character(date_start), "T00:00:00.000Z")
+#   date_end <- paste0(as.character(date_end), "T00:00:00.000Z")
+#   
+#   twitter_1 <- New$find(paste0('{ "created_at": {"$gte": { "$date":"', date_start,'"}, "$lte": { "$date":"', date_end, '"}}}'))
+#   twitter_2<- twitter_1[twitter_1$sub==sub,]
+#   if(lang== "Both"){
+#     twitter_3<- twitter_2 
+#   }else{
+#     twitter_3<- twitter_2[twitter_2$lang== lang,]
+#   }
+#   return(twitter_3)
+# }
+
 twitter_sub <- function(twitter_db, sub, date_start, date_end, lang){
   # twitter_1<- twitter_db%>% subset(date> date_start & date< date_end)
   # result <- New$find('{ "created_at": {"$gte": { "$date": "2021-09-15T00:00:00.000Z"}, "$lte": { "$date": "2021-09-20T00:00:00.000Z"}}}')
   date_start <- paste0(as.character(date_start), "T00:00:00.000Z")
   date_end <- paste0(as.character(date_end), "T00:00:00.000Z")
   
-  twitter_1 <- New$find(paste0('{ "created_at": {"$gte": { "$date":"', date_start,'"}, "$lte": { "$date":"', date_end, '"}}}'))
-  twitter_2<- twitter_1[twitter_1$sub==sub,]
-  if(lang== "Both"){
-    twitter_3<- twitter_2 
-  }else{
-    twitter_3<- twitter_2[twitter_2$lang== lang,]
+  query <- paste0('{ "created_at": {"$gte": { "$date":"', date_start,'"}, "$lte": { "$date":"', date_end, '"}}')
+  query <- paste0(query, ' ,', '"sub": ', '"', sub, '"')
+  
+  if(lang!="Both")
+  {
+    query <- paste0(query, ' ,', '"lang": ', '"', lang, '"')
   }
+  
+  query <- paste0(query, ' }')
+  
+  
+  twitter_3 <- New$find(query)
+  twitter_3 <- twitter_3[, -1]
+  
   return(twitter_3)
 }
 
@@ -266,6 +289,7 @@ count_bigrams2 <- function(dataset) {
   # print("printed")
   # print(typeof(dataset))
   # print(dataset[1:5,])
+  dataset <- dataset[,-1]
   dataset %>%
     unnest_tokens(bigram, trans, token = "ngrams", n = 2) %>%
     separate(bigram, c("word1", "word2"), sep = " ") %>%
@@ -337,8 +361,8 @@ wd_corr22<- function(djt2){
   
   kjv_bigrams <- count_bigrams2(djt2)
   
-  print("counting")
-  print(kjv_bigrams)
+  # print("counting")
+  # print(kjv_bigrams)
   
   # filter out rare combinations, as well as digits
   kjv_bigrams %>%
@@ -527,29 +551,56 @@ src<-Final_DB$aggregate('[{
 colnames(src) <- c('Source', 'n')
 src<- src[order(-src$n),]
 
+# news_sub <- function(Final_DB, sub, week= "All", lang, src= "All"){
+#   if(week== "All"){
+#     # news_1<- Final_DB
+#     news_1<-Final_DB$find()
+#   }else{
+#     news_1<- Final_DB[Final_DB$week2== week]
+#     # news1 <- Final_DB$find(paste('{"$week2": ', week, '}', sep=''))
+#   }
+#   
+#   news_2<- news_1[news_1$sub==sub,]
+#   if(lang== "Both"){
+#     news_3<- news_2 
+#   }else{
+#     news_3<- news_2[news_2$lang== lang,]
+#   }
+#   
+#   if(src== "All"){
+#     news_4<- news_3
+#   }else{
+#     news_4<- news_3[news_3$Source== src,]
+#   }
+#   
+#   return(news_4)
+# }
+
+
 news_sub <- function(Final_DB, sub, week= "All", lang, src= "All"){
-  if(week== "All"){
-    # news_1<- Final_DB
-    news_1<-Final_DB$find()
-  }else{
-    news_1<- Final_DB[Final_DB$week2== week]
-    # news1 <- Final_DB$find(paste('{"$week2": ', week, '}', sep=''))
+  
+  query <- paste0('{"sub": ', '"', sub, '"')
+  
+  if(week!="All")
+  {
+    query <- paste0(query, ', ', '"week2": ', '"', week, '"')
+  }
+  if(lang!="Both")
+  {
+    query <- paste0(query, ', ', '"lang": ', '"', lang, '"') 
+  }
+  if(src!="All")
+  {
+    query <- paste0(query, ', ', '"src": ', '"', src, '"') 
   }
   
-  news_2<- news_1[news_1$sub==sub,]
-  if(lang== "Both"){
-    news_3<- news_2 
-  }else{
-    news_3<- news_2[news_2$lang== lang,]
-  }
   
-  if(src== "All"){
-    news_4<- news_3
-  }else{
-    news_4<- news_3[news_3$Source== src,]
-  }
+  query <- paste0(query, ' }')
   
-  return(news_4)
+  news4 <- Final_DB$find(query)
+  news4 <- news4[, -1]
+  
+  return(news4)
 }
 
 
@@ -629,6 +680,7 @@ wd_promi2<- function(djt2, vector){
 
 
 wd_freq2<- function(Final){
+  print(colnames(Final))
   vaccine_words <- Final %>%
     unnest_tokens(word, trans) %>%
     filter(!word %in% stop_words$word, 

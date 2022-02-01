@@ -123,7 +123,7 @@ twitterServer <- function(id) {
   get_choice<- reactive(choice2)
   data<- eventReactive(input$button,{twitter_sub(djt, input$choice, input$dateRange[2], input$dateRange[1], input$lang)})
   print(">>>>>>>>>>..")
-  print(data)
+  # print(data())
   part2<- eventReactive(input$button,{
     part(data())})
   hashtag<- eventReactive(input$button,{
