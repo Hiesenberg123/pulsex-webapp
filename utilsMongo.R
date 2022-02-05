@@ -141,7 +141,7 @@ twitter_sub <- function(twitter_db, sub, date_start, date_end, lang){
   date_start <- paste0(as.character(date_start), "T00:00:00.000Z")
   date_end <- paste0(as.character(date_end), "T00:00:00.000Z")
   
-  query <- paste0('{ "created_at": {"$gte": { "$date":"', date_start,'"}, "$lte": { "$date":"', date_end, '"}}')
+  query <- paste0('{ "created_at": {"$lte": { "$date":"', date_start,'"}, "$gte": { "$date":"', date_end, '"}}')
   query <- paste0(query, ' ,', '"sub": ', '"', sub, '"')
   
   if(lang!="Both")
@@ -150,10 +150,15 @@ twitter_sub <- function(twitter_db, sub, date_start, date_end, lang){
   }
   
   query <- paste0(query, ' }')
-  
+  print(query)
   
   twitter_3 <- New$find(query)
+  print(colnames(twitter_3))
   twitter_3 <- twitter_3[, -1]
+  
+  
+  
+  twitter_3$created_at <- as.Date(twitter_3$created_at, format = "yyyy-mm-dd")
   
   return(twitter_3)
 }
@@ -201,6 +206,7 @@ Score<- function(Final, para){
 }
 
 Hashtg<- function(Final){
+  # print(colnames(Final))
   Final<- Final[Final$is_retweet=="FALSE",]
   part2<- as.data.frame(unique(Final$screen_name))
   colnames(part2)<- "part2"

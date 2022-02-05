@@ -1,5 +1,5 @@
-source("utils.R")
-# source("utilsMongo.R")
+# source("utils.R")
+source("utilsMongo.R")
 
 uitwitter <- function(id, label = "Counter") {
   ns <- NS(id)
@@ -121,7 +121,8 @@ uitwitter <- function(id, label = "Counter") {
 twitterServer <- function(id) {
   moduleServer(id, function(input, output, session) {
   get_choice<- reactive(choice2)
-  data<- eventReactive(input$button,{twitter_sub(djt, input$choice, input$dateRange[2], input$dateRange[1], input$lang)})
+  # data<- eventReactive(input$button,{twitter_sub(djt, input$choice, input$dateRange[2], input$dateRange[1], input$lang)})
+  data<- eventReactive(input$button,{twitter_sub(New, input$choice, input$dateRange[2], input$dateRange[1], input$lang)})
   print(">>>>>>>>>>..")
   # print(data())
   part2<- eventReactive(input$button,{
